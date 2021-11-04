@@ -49,7 +49,7 @@ public class PostagemController {
 	
 	//Atualizar
 	@PostMapping
-		public ResponseEntity<Postagem> putPustagem(@RequestBody Postagem postagem){
+		public ResponseEntity<Postagem> putPostagem(@RequestBody Postagem postagem){
 		return postagemRepository.findById(postagem.getId())
 				.map(resposta -> ResponseEntity.ok(postagemRepository.save(postagem)))
 				.orElse(ResponseEntity.notFound().build());
