@@ -19,49 +19,59 @@ import br.org.generation.blogpessoal.model.Tema;
 import br.org.generation.blogpessoal.repository.TemaRepository;
 
 @RestController
-@RequestMapping("/tema")
-@CrossOrigin(origins ="*", allowedHeaders = "*")
+@RequestMapping("/temas")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class TemaController {
 	
-	@Autowired
+	//Injeção de dependência
+	@Autowired 
 	private TemaRepository temaRepository;
 	
-	@GetMapping
-	public ResponseEntity<List<Tema>> getAll(){
-		return ResponseEntity.ok(temaRepository.findAll());
-	}
-	 
+	//Variável
 	@GetMapping("/{id}")
-	public ResponseEntity<Tema> getById(@PathVariable long id){
+	public ResponseEntity <Tema> getById(@PathVariable long id) 
+	{
 		return temaRepository.findById(id)
-				.map(resposta -> ResponseEntity.ok(resposta))
-				.orElse(ResponseEntity.notFound().build());
+			.map(resposta -> ResponseEntity.ok(resposta))
+			.orElse(ResponseEntity.notFound().build());
 	}
 	
-	@GetMapping("/nome{nome}")
-	public ResponseEntity<List<Tema>> getByName(@PathVariable String nome){
-		return ResponseEntity.ok(temaRepository.findAllByDescricaoContainingIgnoreCase(nome));
+	//Consulta por descrição
+	@GetMapping("/descricao/{descricao}")
+	public ResponseEntity<List<Tema>> getByDescricao(@PathVariable String descricao) 
+	{
+		return ResponseEntity.ok(temaRepository.findAllByDescricaoContainingIgnoreCase(descricao));
 	}
 	
+	//Cria novo tema
 	@PostMapping
-	public ResponseEntity<Tema> postTema(@RequestBody Tema tema){
+	public ResponseEntity<Tema> postTema(@RequestBody Tema tema) 
+	{
 		return ResponseEntity.status(HttpStatus.CREATED).body(temaRepository.save(tema));
-		
 	}
+
 	@PutMapping
-	public ResponseEntity<Tema> putTema(@RequestBody Tema tema){
+	public ResponseEntity<Tema> putTema(@RequestBody Tema tema) 
+	{
 		return temaRepository.findById(tema.getId())
-				.map(resposta -> ResponseEntity.ok(temaRepository.save(tema)))
-				.orElse(ResponseEntity.notFound().build());
+		        .map(resposta -> 
+		        { 
+		        	return ResponseEntity.ok(temaRepository.save(tema));
+		         })
+		        .orElse(ResponseEntity.notFound().build());
 	}
 	
+	//Deleta
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletaTema(@PathVariable long id){
-		if(!temaRepository.existsById(id)) {
-			return ResponseEntity.notFound().build();
-		}
-		temaRepository.deleteById(id);
-		return ResponseEntity.noContent().build();
+	public ResponseEntity <?> deleteTema(@PathVariable long id) 
+	{
+		return temaRepository.findById(id)
+		        .map(resposta -> 
+		        {
+		            temaRepository.deleteById(id);
+		            return ResponseEntity.noContent().build();
+		        })
+		        .orElse(ResponseEntity.notFound().build());
 	}
 
 }
